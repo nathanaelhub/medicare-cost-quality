@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: raw
+    database: CMS
+    schema: RAW
+    description: "Raw CMS landing tables — exact CSV shape"
+    tables:
+      - name: inpatient_charges
+        description: "Medicare Inpatient Hospitals by Provider and Service"
+      - name: hrrp_readmissions
+        description: "Hospital Readmissions Reduction Program"

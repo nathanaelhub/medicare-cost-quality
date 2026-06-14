@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: dim_provider
+    description: "One hospital per CCN. Conformed across both facts."
+    columns:
+      - name: provider_sk
+        tests: [unique, not_null]
+      - name: ccn
+        tests: [unique, not_null]
+
+  - name: dim_drg
+    description: "One MS-DRG per row, with service-line rollup."
+    columns:
+      - name: drg_sk
+        tests: [unique, not_null]
+      - name: drg_code
+        tests: [unique, not_null]
+      - name: service_line
+        tests: [not_null]
+
+  - name: dim_geography
+    description: "US state → census region, conformed."
+    columns:
+      - name: geo_sk
+        tests: [unique, not_null]
+      - name: census_region
+        tests:
+          - accepted_values:
+              values: ['Northeast', 'Midwest', 'South', 'West', 'Other']
+
+  - name: fact_inpatient_charges
+    description: "Hospital × DRG grain. Cost side of the model."
+    columns:
+      - name: provider_sk
+        tests:
+          - not_null
+          - relationships: { to: ref('dim_provider'), field: provider_sk }
+      - name: drg_sk
+        tests:
+          - relationships: { to: ref('dim_drg'), field: drg_sk }
+      - name: avg_medicare_payment
+        tests:
+          - dbt_utils.accepted_range: { min_value: 0, inclusive: true }
+
+  - name: fact_readmissions
+    description: "Hospital × readmission-measure grain. Quality side."
+    columns:
+      - name: provider_sk
+        # The cross-fact contract: every readmissions row must resolve to a
+        # provider that also exists in the charges-built dim. If CMS ever
+        # ships an HRRP facility with no inpatient charges, this fails loudly.
+        tests:
+          - relationships: { to: ref('dim_provider'), field: provider_sk }
+      - name: condition
+        tests:
+          - accepted_values:
+              values: ['Heart attack','Heart failure','Pneumonia','COPD','Hip/knee replacement','CABG (bypass)']
+      - name: excess_readmission_ratio
+        tests:
+          - dbt_utils.accepted_range: { min_value: 0, inclusive: true }

@@ -1,0 +1,17 @@
+# Copy to ~/.dbt/profiles.yml and fill in. A programmatic access token
+# goes in the `password` field with the default authenticator.
+
+cms:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: <your-account>            # e.g. ABCDEFG-XY12345
+      user: <your-user>
+      password: "<PAT-or-password>"
+      role: ACCOUNTADMIN                  # or WAREHOUSE_DEV with an unrestricted credential
+      database: CMS
+      warehouse: XFORM_WH
+      schema: stg
+      threads: 4
+      client_session_keep_alive: False

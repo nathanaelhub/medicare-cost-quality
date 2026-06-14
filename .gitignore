@@ -1,0 +1,12 @@
+data/
+*.csv
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+.snowflake/
+.DS_Store
