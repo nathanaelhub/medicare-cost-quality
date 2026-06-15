@@ -76,7 +76,8 @@ def fetch_hrrp() -> None:
     """Page the Provider Data Catalog datastore API into one CSV."""
     RAW.mkdir(parents=True, exist_ok=True)
     out = RAW / "hrrp_readmissions.csv"
-    limit, offset, all_rows, header = 5000, 0, [], None
+    # The Provider Data Catalog datastore API caps page size at 1000.
+    limit, offset, all_rows, header = 1000, 0, [], None
     while True:
         url = f"{HRRP_QUERY_URL}?limit={limit}&offset={offset}"
         payload = json.loads(_get(url))

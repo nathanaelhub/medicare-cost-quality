@@ -71,10 +71,13 @@ def main() -> int:
                 f"PUT 'file://{src}' @CMS_STAGE/{table}/ AUTO_COMPRESS=TRUE OVERWRITE=TRUE"
             )
             print(f"  COPY INTO {table}")
+            # MATCH_BY_COLUMN_NAME needs PARSE_HEADER=TRUE (not SKIP_HEADER).
+            # The CSVs carry extra/differently-ordered columns; matching by
+            # name keeps the load robust to that.
             cur.execute(f"""
                 COPY INTO {table} FROM @CMS_STAGE/{table}/
                 FILE_FORMAT = (TYPE='CSV' FIELD_OPTIONALLY_ENCLOSED_BY='"'
-                               SKIP_HEADER=1 NULL_IF=('','NA','Not Available'))
+                               PARSE_HEADER=TRUE NULL_IF=('','NA','Not Available'))
                 MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'
                 ON_ERROR = 'CONTINUE'
             """)

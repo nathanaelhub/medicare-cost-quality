@@ -17,9 +17,10 @@ CREATE OR REPLACE TABLE inpatient_charges (
     Rndrng_Prvdr_CCN            STRING NOT NULL,   -- CMS Certification Number (joins to HRRP Facility ID)
     Rndrng_Prvdr_Org_Name       STRING,
     Rndrng_Prvdr_City           STRING,
-    Rndrng_Prvdr_State_Abrvtn   STRING,
+    Rndrng_Prvdr_St             STRING,            -- full state name
     Rndrng_Prvdr_State_FIPS     STRING,
     Rndrng_Prvdr_Zip5           STRING,
+    Rndrng_Prvdr_State_Abrvtn   STRING,
     Rndrng_Prvdr_RUCA           STRING,            -- rural-urban commuting area code
     Rndrng_Prvdr_RUCA_Desc      STRING,
     DRG_Cd                      STRING NOT NULL,   -- MS-DRG code
