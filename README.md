@@ -38,9 +38,23 @@ medicare-cost-quality/
 │       └── marts/          # fact_inpatient_charges, fact_readmissions,
 │                           # dim_provider, dim_drg, dim_geography
 ├── sql_highlights/         # the 3 queries behind the portfolio charts
+├── results/                # proof it ran — real outputs + dbt logs
+│   ├── query_results.md    # the 3 queries' actual output (DY2024)
+│   ├── dbt_run.log         # 7 models built, with row counts
+│   └── dbt_test.log        # 19/19 tests passing
 └── docs/
-    └── star_schema.md      # grain, conformance, and the CCN-join contract
+    ├── star_schema.md      # grain, conformance, and the CCN-join contract
+    └── lineage.md          # the dbt DAG (mermaid, renders on GitHub)
 ```
+
+## Proof it ran
+
+This isn't just SQL files — it was built and validated against a live Snowflake warehouse on the CMS DY2024 release:
+
+- **[`results/query_results.md`](results/query_results.md)** — the three analyst queries' real output (DRG-470 20× price spread; ~6× uniform markup; cost-vs-quality r = −0.081 across 2,789 hospitals).
+- **[`results/dbt_run.log`](results/dbt_run.log)** — 7 models built: `dim_provider` 2,906 · `fact_inpatient_charges` 145,879 · `fact_readmissions` 11,720.
+- **[`results/dbt_test.log`](results/dbt_test.log)** — 19/19 tests passing, including the cross-fact `relationships` test on the CCN join.
+- **[`docs/lineage.md`](docs/lineage.md)** — the dbt DAG.
 
 ## The pipeline
 

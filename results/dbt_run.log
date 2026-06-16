@@ -1,0 +1,9 @@
+17:43:36  2 of 7 OK created sql view model stg.stg_readmissions .......................... [SUCCESS 1 in 0.49s]
+17:43:36  1 of 7 OK created sql view model stg.stg_inpatient_charges ..................... [SUCCESS 1 in 0.64s]
+17:43:38  5 of 7 OK created sql table model marts.dim_provider ........................... [SUCCESS 2906 in 1.82s]
+17:43:38  3 of 7 OK created sql table model marts.dim_drg ................................ [SUCCESS 540 in 2.00s]
+17:43:38  4 of 7 OK created sql table model marts.dim_geography .......................... [SUCCESS 51 in 2.07s]
+17:43:40  7 of 7 OK created sql table model marts.fact_readmissions ...................... [SUCCESS 11720 in 1.91s]
+17:43:41  6 of 7 OK created sql table model marts.fact_inpatient_charges ................. [SUCCESS 145879 in 2.73s]
+17:43:42  Completed successfully
+17:43:42  Done. PASS=7 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=7
