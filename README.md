@@ -2,6 +2,8 @@
 
 An analytics-engineering case study on Medicare inpatient hospital data: what the same procedure costs at different hospitals, how far hospital charges sit above what Medicare actually pays, and whether spending more buys better outcomes. Raw CMS CSVs land in Snowflake, get modeled into a **two-fact conformed-dimension star schema** with dbt, and back a narrative dashboard on [nathanaeljohnson.net/work/medicare-cost-quality](https://nathanaeljohnson.net/work/medicare-cost-quality).
 
+**▶ [Walk through the 10-slide deck](https://nathanaelhub.github.io/medicare-cost-quality/)** — the analytics story in presentation form.
+
 The data is real and public — no authentication, published by the Centers for Medicare & Medicaid Services:
 
 - **[Medicare Inpatient Hospitals — by Provider and Service](https://data.cms.gov/provider-summary-by-type-of-service/medicare-inpatient-hospitals)** — for every hospital and every MS-DRG (procedure group), the total discharges, average covered charge (what the hospital bills), average total payment, and average Medicare payment. ~150k provider × DRG rows.
