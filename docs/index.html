@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medicare Cost & Quality.dc — presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#f6f4ef; }
+  @keyframes mcq-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  [data-slide] { transition: opacity .28s ease, transform .28s ease; }
+  @media (prefers-reduced-motion: reduce) { [data-slide] { transition: opacity .12s linear !important; transform:none !important; } }
+</style>
+</head>
+<body>
+
+
+<div style="min-height:100vh; width:100%; background:#f6f4ef; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px 24px; font-family:'Inter',sans-serif;">
+  <div id="dc-stage" style="position:relative; width:min(1120px, 94vw); aspect-ratio:16/9; background:#fbf9f4; border:1px solid #d9d4c7; border-radius:4px; box-shadow:0 18px 50px -28px rgba(28,27,24,0.35); overflow:hidden;">
+
+    <section data-slide data-label="Title" data-screen-label="01" style="position:absolute; inset:0; opacity:1; background:#e4ede9; display:flex; flex-direction:column; justify-content:center; padding:6.4% 7%; z-index:2;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">Analytics Engineering · Case Study</div>
+      <h1 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:5.4vw; line-height:1.0; letter-spacing:-0.015em; margin:3.2% 0 2.4%;">Medicare<br>Cost &amp; Quality</h1>
+      <p style="font-family:'Inter',sans-serif; color:#3d3a33; font-size:1.32vw; line-height:1.5; max-width:62%;">What the same procedure costs across hospitals, the charge-to-payment markup, and whether spending buys better outcomes — a two-fact star schema on public CMS data.</p>
+      <div style="font-family:'Geist Mono',monospace; font-size:0.84vw; letter-spacing:0.16em; text-transform:uppercase; color:#605b50; margin-top:4.2%;">SNOWFLAKE&nbsp;&nbsp;·&nbsp;&nbsp;DBT&nbsp;&nbsp;·&nbsp;&nbsp;TWO-FACT STAR&nbsp;&nbsp;·&nbsp;&nbsp;CMS DATA</div>
+      <div style="display:flex; align-items:baseline; gap:10px; margin-top:2.2%; padding-top:2.2%; border-top:1px solid #d9d4c7;">
+        <span style="font-family:'Fraunces',serif; font-size:1.18vw; color:#1c1b18;">Nathanael Johnson</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:0.74vw; letter-spacing:0.14em; text-transform:uppercase; color:#8a8478;">Analytics Engineer</span>
+      </div>
+    </section>
+    <section data-slide data-label="The question" data-screen-label="02" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:6.4% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500; margin-bottom:3%;">The question</div>
+      <p style="font-family:'Fraunces',serif; font-weight:300; color:#1c1b18; font-size:3.05vw; line-height:1.18; letter-spacing:-0.015em; max-width:84%;">Healthcare prices are incoherent — the same procedure carries wildly different charges, and almost nobody pays the charge anyway.</p>
+      <p style="font-family:'Instrument Serif',serif; font-style:italic; color:#1f7a6b; font-size:2.7vw; line-height:1.2; margin-top:3.4%; max-width:78%;">Does paying a hospital more buy better outcomes?</p>
+    </section>
+
+    <section data-slide data-label="The data" data-screen-label="03" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:6.4% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">The data</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.7vw; line-height:1.05; letter-spacing:-0.01em; margin:1.6% 0 3.4%;">Two public CMS extracts, one shared key</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:2.4%;">
+        <div style="border-top:2px solid #1f7a6b; padding-top:2%;">
+          <div style="font-family:'Fraunces',serif; font-size:2.6vw; color:#1c1b18; line-height:1;">145,879</div>
+          <div style="font-family:'Geist Mono',monospace; font-size:0.7vw; letter-spacing:0.12em; text-transform:uppercase; color:#8a8478; margin:0.6% 0 1.2%;">rows · DY2024</div>
+          <div style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#3d3a33; line-height:1.45;"><strong style="color:#1c1b18;">Inpatient Hospitals by Provider &amp; Service.</strong> Per hospital × MS-DRG: discharges, average covered charge, average Medicare payment.</div>
+        </div>
+        <div style="border-top:2px solid #1f7a6b; padding-top:2%;">
+          <div style="font-family:'Fraunces',serif; font-size:2.6vw; color:#1c1b18; line-height:1;">18,330</div>
+          <div style="font-family:'Geist Mono',monospace; font-size:0.7vw; letter-spacing:0.12em; text-transform:uppercase; color:#8a8478; margin:0.6% 0 1.2%;">rows · HRRP</div>
+          <div style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#3d3a33; line-height:1.45;"><strong style="color:#1c1b18;">Readmissions Reduction Program.</strong> Per hospital: 30-day excess-readmission ratio across six conditions.</div>
+        </div>
+      </div>
+      <p style="font-family:'Inter',sans-serif; font-size:1.02vw; color:#605b50; line-height:1.5; margin-top:3.4%; max-width:90%;">The join: HRRP's <span style="font-family:'Geist Mono',monospace; font-size:0.88vw; color:#1f7a6b;">Facility ID</span> <em>is</em> the inpatient file's <span style="font-family:'Geist Mono',monospace; font-size:0.88vw; color:#1f7a6b;">Rndrng_Prvdr_CCN</span> — the CMS Certification Number. That shared key is the whole project.</p>
+    </section>
+    <section data-slide data-label="The model" data-screen-label="04" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:5% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">The model</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.5vw; line-height:1.05; letter-spacing:-0.01em; margin:1.2% 0 2%;">A two-fact, conformed-dimension star</h2>
+      <div style="display:grid; grid-template-columns:1.55fr 1fr; gap:3%; align-items:center;">
+        <svg viewBox="0 0 1000 430" style="width:100%; height:auto;" font-family="'Geist Mono', monospace">
+          <g stroke="#c7c0b0" stroke-width="1.5">
+            <line x1="430" y1="96" x2="250" y2="186"></line>
+            <line x1="570" y1="96" x2="770" y2="186"></line>
+            <line x1="220" y1="284" x2="210" y2="350"></line>
+            <line x1="500" y1="96" x2="500" y2="350"></line>
+          </g>
+          <!-- dim_provider hub -->
+          <g>
+            <rect x="390" y="26" width="220" height="70" rx="6" fill="#ffffff" stroke="#1f7a6b" stroke-width="1.5"></rect>
+            <text x="500" y="55" text-anchor="middle" font-size="17" fill="#1f7a6b" font-weight="500">dim_provider</text>
+            <text x="500" y="78" text-anchor="middle" font-size="12.5" fill="#605b50">2,906 hospitals · keyed on CCN</text>
+          </g>
+          <!-- fact_inpatient_charges -->
+          <g>
+            <rect x="110" y="186" width="280" height="98" rx="6" fill="#1f7a6b" fill-opacity="0.07" stroke="#1f7a6b" stroke-width="2"></rect>
+            <text x="250" y="222" text-anchor="middle" font-size="17" fill="#1c1b18" font-weight="500">fact_inpatient_charges</text>
+            <text x="250" y="246" text-anchor="middle" font-size="12.5" fill="#605b50">grain: hospital × DRG</text>
+            <text x="250" y="268" text-anchor="middle" font-size="13" fill="#1f7a6b" font-weight="500">145,879 rows · COST</text>
+          </g>
+          <!-- fact_readmissions -->
+          <g>
+            <rect x="630" y="186" width="280" height="98" rx="6" fill="#1f7a6b" fill-opacity="0.07" stroke="#1f7a6b" stroke-width="2"></rect>
+            <text x="770" y="222" text-anchor="middle" font-size="17" fill="#1c1b18" font-weight="500">fact_readmissions</text>
+            <text x="770" y="246" text-anchor="middle" font-size="12.5" fill="#605b50">grain: hospital × condition</text>
+            <text x="770" y="268" text-anchor="middle" font-size="13" fill="#1f7a6b" font-weight="500">11,720 rows · QUALITY</text>
+          </g>
+          <!-- dim_drg -->
+          <g>
+            <rect x="105" y="350" width="210" height="62" rx="6" fill="#ffffff" stroke="#c7c0b0" stroke-width="1.5"></rect>
+            <text x="210" y="378" text-anchor="middle" font-size="15" fill="#3d3a33" font-weight="500">dim_drg</text>
+            <text x="210" y="398" text-anchor="middle" font-size="12" fill="#8a8478">540 · + service_line</text>
+          </g>
+          <!-- dim_geography -->
+          <g>
+            <rect x="395" y="350" width="210" height="62" rx="6" fill="#ffffff" stroke="#c7c0b0" stroke-width="1.5"></rect>
+            <text x="500" y="378" text-anchor="middle" font-size="15" fill="#3d3a33" font-weight="500">dim_geography</text>
+            <text x="500" y="398" text-anchor="middle" font-size="12" fill="#8a8478">51 states → census region</text>
+          </g>
+        </svg>
+        <div>
+          <p style="font-family:'Inter',sans-serif; font-size:1.04vw; color:#3d3a33; line-height:1.55;">Two facts at <strong style="color:#1c1b18;">different grains</strong>, joined on demand through the conformed <span style="font-family:'Geist Mono',monospace; font-size:0.9vw; color:#1f7a6b;">dim_provider</span>.</p>
+          <p style="font-family:'Inter',sans-serif; font-size:1.04vw; color:#605b50; line-height:1.55; margin-top:1.4em;">A dbt <span style="font-family:'Geist Mono',monospace; font-size:0.9vw; color:#1f7a6b;">relationships</span> test enforces the CCN join as a contract — if a future CMS release breaks it, the build fails loudly.</p>
+        </div>
+      </div>
+    </section>
+    <section data-slide data-label="Finding 01" data-screen-label="05" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:5.4% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">Finding 01</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.7vw; line-height:1.04; letter-spacing:-0.01em; margin:1% 0 0.4%;">Same procedure, 20× the price</h2>
+      <div style="font-family:'Inter',sans-serif; font-size:0.92vw; color:#8a8478; margin-bottom:2.4%;">DRG 470 — major joint replacement · average covered charge across n = 1,212 hospitals</div>
+      <svg viewBox="0 0 1000 230" style="width:100%; height:auto;" font-family="'Geist Mono', monospace">
+        <rect x="117" y="106" width="301" height="28" fill="#1f7a6b" fill-opacity="0.12"></rect>
+        <line x1="60" y1="120" x2="940" y2="120" stroke="#d9d4c7" stroke-width="2"></line>
+        <!-- min -->
+        <line x1="60" y1="106" x2="60" y2="134" stroke="#8a8478" stroke-width="2"></line>
+        <circle cx="60" cy="120" r="4" fill="#605b50"></circle>
+        <text x="60" y="92" text-anchor="start" font-size="12" letter-spacing="0.12em" fill="#8a8478">MIN</text>
+        <text x="60" y="160" text-anchor="start" font-size="13.5" fill="#3d3a33">$19,194</text>
+        <!-- p10 -->
+        <line x1="117" y1="106" x2="117" y2="134" stroke="#8a8478" stroke-width="2"></line>
+        <circle cx="117" cy="120" r="4" fill="#605b50"></circle>
+        <text x="117" y="92" text-anchor="middle" font-size="12" letter-spacing="0.12em" fill="#8a8478">P10</text>
+        <text x="117" y="184" text-anchor="middle" font-size="13.5" fill="#3d3a33">$42,710</text>
+        <!-- median -->
+        <line x1="207" y1="92" x2="207" y2="148" stroke="#1f7a6b" stroke-width="3"></line>
+        <circle cx="207" cy="120" r="6" fill="#1f7a6b"></circle>
+        <text x="207" y="78" text-anchor="middle" font-size="12.5" letter-spacing="0.12em" fill="#1f7a6b" font-weight="500">MEDIAN</text>
+        <text x="207" y="174" text-anchor="middle" font-size="20" fill="#1f7a6b" font-weight="500" font-family="'Fraunces', serif">$79,947</text>
+        <!-- p90 -->
+        <line x1="418" y1="106" x2="418" y2="134" stroke="#8a8478" stroke-width="2"></line>
+        <circle cx="418" cy="120" r="4" fill="#605b50"></circle>
+        <text x="418" y="92" text-anchor="middle" font-size="12" letter-spacing="0.12em" fill="#8a8478">P90</text>
+        <text x="418" y="160" text-anchor="middle" font-size="13.5" fill="#3d3a33">$167,283</text>
+        <!-- max -->
+        <line x1="940" y1="106" x2="940" y2="134" stroke="#8a8478" stroke-width="2"></line>
+        <circle cx="940" cy="120" r="4" fill="#605b50"></circle>
+        <text x="940" y="92" text-anchor="end" font-size="12" letter-spacing="0.12em" fill="#8a8478">MAX</text>
+        <text x="940" y="160" text-anchor="end" font-size="13.5" fill="#3d3a33">$383,606</text>
+      </svg>
+      <div style="display:flex; gap:6%; margin-top:2.6%; align-items:flex-start;">
+        <div style="display:flex; align-items:baseline; gap:10px;">
+          <span style="font-family:'Fraunces',serif; font-size:2.1vw; color:#1f7a6b;">20×</span>
+          <span style="font-family:'Inter',sans-serif; font-size:0.92vw; color:#605b50; max-width:18ch;">spread in the charge</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:10px; padding-left:6%; border-left:1px solid #d9d4c7;">
+          <span style="font-family:'Fraunces',serif; font-size:2.1vw; color:#1c1b18;">1.7×</span>
+          <span style="font-family:'Inter',sans-serif; font-size:0.92vw; color:#605b50; max-width:22ch;">spread in the actual Medicare <em>payment</em></span>
+        </div>
+        <p style="font-family:'Inter',sans-serif; font-size:0.98vw; color:#3d3a33; line-height:1.5; max-width:38ch;">The charge is a list price decoupled from the cost of care, or from what anyone pays. The payment — what's actually exchanged — is far more uniform.</p>
+      </div>
+    </section>
+    <section data-slide data-label="Finding 02" data-screen-label="06" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:5% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">Finding 02</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.6vw; line-height:1.04; letter-spacing:-0.01em; margin:1% 0 0.4%;">The markup is ~6×, and weirdly uniform</h2>
+      <div style="font-family:'Inter',sans-serif; font-size:0.9vw; color:#8a8478; margin-bottom:1.6%;">charge ÷ Medicare payment by service line · discharge-weighted</div>
+      <div style="display:grid; grid-template-columns:1.7fr 1fr; gap:3.5%; align-items:center;">
+        <svg viewBox="0 0 1000 340" style="width:100%; height:auto;" font-family="'Geist Mono', monospace">
+          <g font-size="13.5" fill="#3d3a33" text-anchor="end">
+            <text x="195" y="37">Nervous system</text>
+            <text x="195" y="83">Digestive</text>
+            <text x="195" y="129">Musculoskeletal</text>
+            <text x="195" y="175">Kidney / urinary</text>
+            <text x="195" y="221">Circulatory</text>
+            <text x="195" y="267">Respiratory</text>
+            <text x="195" y="313">Transplants</text>
+          </g>
+          <g fill="#1f7a6b">
+            <rect x="210" y="18" width="631" height="28" rx="2"></rect>
+            <rect x="210" y="64" width="631" height="28" rx="2"></rect>
+            <rect x="210" y="110" width="621" height="28" rx="2"></rect>
+            <rect x="210" y="156" width="616" height="28" rx="2"></rect>
+            <rect x="210" y="202" width="597" height="28" rx="2"></rect>
+            <rect x="210" y="248" width="590" height="28" rx="2"></rect>
+            <rect x="210" y="294" width="556" height="28" rx="2"></rect>
+          </g>
+          <g font-size="14" fill="#1c1b18" font-weight="500">
+            <text x="853" y="37">6.40×</text>
+            <text x="853" y="83">6.40×</text>
+            <text x="843" y="129">6.30×</text>
+            <text x="838" y="175">6.25×</text>
+            <text x="819" y="221">6.06×</text>
+            <text x="812" y="267">5.99×</text>
+            <text x="778" y="313">5.64×</text>
+          </g>
+        </svg>
+        <p style="font-family:'Inter',sans-serif; font-size:1.04vw; color:#3d3a33; line-height:1.55;">From nervous-system procedures to transplants, the markup sits in a tight <strong style="color:#1c1b18;">5.6–6.4× band.</strong> The list price isn't tracking complexity — it's a roughly fixed multiple applied across the board.</p>
+      </div>
+    </section>
+    <section data-slide data-label="Finding 03" data-screen-label="07" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:5% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">Finding 03 · the two-fact join</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.6vw; line-height:1.04; letter-spacing:-0.01em; margin:1% 0 0.2%;">Spending barely buys quality</h2>
+      <div style="font-family:'Inter',sans-serif; font-size:0.9vw; color:#8a8478; margin-bottom:0.8%;">5 Medicare-payment quintiles vs average 30-day excess-readmission ratio · 1.0 = exactly as expected after risk adjustment</div>
+      <div style="display:grid; grid-template-columns:1.85fr 1fr; gap:3.5%; align-items:center;">
+        <svg viewBox="0 0 1000 400" style="width:100%; height:auto;" font-family="'Geist Mono', monospace">
+          <!-- y labels -->
+          <g font-size="12" fill="#8a8478" text-anchor="end">
+            <text x="96" y="64">1.010</text>
+            <text x="96" y="176">1.000</text>
+            <text x="96" y="288">0.990</text>
+          </g>
+          <!-- expected reference -->
+          <line x1="110" y1="172" x2="950" y2="172" stroke="#1f7a6b" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"></line>
+          <text x="950" y="164" text-anchor="end" font-size="11.5" letter-spacing="0.1em" fill="#1f7a6b">= EXPECTED</text>
+          <!-- baseline -->
+          <line x1="110" y1="340" x2="950" y2="340" stroke="#d9d4c7" stroke-width="1.5"></line>
+          <!-- connecting line -->
+          <path d="M150,95 L342,104 L535,165 L728,271 L920,237" fill="none" stroke="#1f7a6b" stroke-width="2.5"></path>
+          <!-- dots -->
+          <g fill="#1f7a6b">
+            <circle cx="150" cy="95" r="6.5"></circle>
+            <circle cx="342" cy="104" r="6.5"></circle>
+            <circle cx="535" cy="165" r="6.5"></circle>
+            <circle cx="728" cy="271" r="6.5"></circle>
+            <circle cx="920" cy="237" r="6.5"></circle>
+          </g>
+          <!-- value labels -->
+          <g font-size="12.5" fill="#3d3a33" text-anchor="middle">
+            <text x="150" y="78">1.0069</text>
+            <text x="342" y="87">1.0061</text>
+            <text x="535" y="148">1.0006</text>
+            <text x="728" y="294">0.9912</text>
+            <text x="920" y="220">0.9942</text>
+          </g>
+          <!-- x labels -->
+          <g text-anchor="middle">
+            <text x="150" y="368" font-size="12.5" fill="#1c1b18" font-weight="500">Q1</text>
+            <text x="342" y="368" font-size="12.5" fill="#1c1b18" font-weight="500">Q2</text>
+            <text x="535" y="368" font-size="12.5" fill="#1c1b18" font-weight="500">Q3</text>
+            <text x="728" y="368" font-size="12.5" fill="#1c1b18" font-weight="500">Q4</text>
+            <text x="920" y="368" font-size="12.5" fill="#1c1b18" font-weight="500">Q5</text>
+            <text x="150" y="388" font-size="11.5" fill="#8a8478">$8,410</text>
+            <text x="342" y="388" font-size="11.5" fill="#8a8478">$10,216</text>
+            <text x="535" y="388" font-size="11.5" fill="#8a8478">$11,805</text>
+            <text x="728" y="388" font-size="11.5" fill="#8a8478">$14,140</text>
+            <text x="920" y="388" font-size="11.5" fill="#8a8478">$21,939</text>
+          </g>
+        </svg>
+        <div>
+          <div style="display:flex; align-items:baseline; gap:10px;">
+            <span style="font-family:'Fraunces',serif; font-size:2.4vw; color:#1f7a6b;">r = −0.081</span>
+          </div>
+          <div style="font-family:'Geist Mono',monospace; font-size:0.72vw; letter-spacing:0.12em; text-transform:uppercase; color:#8a8478; margin:0.4% 0 1.4%;">across 2,789 hospitals</div>
+          <p style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#3d3a33; line-height:1.55;">A faint downward tilt — the best-paid quintile dips just below expectation — but payment explains <strong style="color:#1c1b18;">under 1%</strong> of the variance in readmissions.</p>
+          <p style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#605b50; line-height:1.55; margin-top:1.1em;">Paying a hospital 2.6× more buys, at most, a rounding error of better outcomes.</p>
+        </div>
+      </div>
+    </section>
+    <section data-slide data-label="So what" data-screen-label="08" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:6.4% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500; margin-bottom:2.6%;">So what</div>
+      <p style="font-family:'Fraunces',serif; font-weight:300; color:#1c1b18; font-size:2.7vw; line-height:1.18; letter-spacing:-0.01em; max-width:88%;">Anchor on the <span style="font-style:italic; color:#1f7a6b;">payment</span>, not the charge — and stop assuming a pricier hospital is a better one.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:5%; margin-top:4%;">
+        <p style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#3d3a33; line-height:1.55;">The 20× charge spread is negotiating theater; what's actually exchanged varies only 1.7×. Any analysis built on charges is measuring a fiction.</p>
+        <p style="font-family:'Inter',sans-serif; font-size:1.0vw; color:#605b50; line-height:1.55;">And the comfortable assumption that higher spend signals higher quality didn't survive the join — <strong style="color:#1c1b18;">r = −0.081.</strong> The honest read is barely-there, not zero, and that's the answer payers keep arriving at.</p>
+      </div>
+    </section>
+
+    <section data-slide data-label="How it was built" data-screen-label="09" style="position:absolute; inset:0; opacity:0; display:flex; flex-direction:column; justify-content:center; padding:5.4% 7%;">
+      <div style="font-family:'Geist Mono',monospace; font-size:0.78vw; letter-spacing:0.18em; text-transform:uppercase; color:#1f7a6b; font-weight:500;">How it was built</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:400; color:#1c1b18; font-size:2.4vw; line-height:1.04; letter-spacing:-0.01em; margin:1% 0 3%;">A contract-tested two-fact pipeline</h2>
+      <div style="display:flex; align-items:stretch; gap:0; font-family:'Geist Mono',monospace; font-size:0.82vw; color:#3d3a33; margin-bottom:3.4%;">
+        <div style="flex:1; padding:1.2% 1%; border-top:2px solid #1f7a6b;">CMS data API<br><span style="color:#8a8478; font-size:0.7vw;">DCAT catalog lookup</span></div>
+        <div style="align-self:center; color:#8a8478; padding:0 0.6%;">→</div>
+        <div style="flex:1; padding:1.2% 1%; border-top:2px solid #1f7a6b;">Snowflake RAW</div>
+        <div style="align-self:center; color:#8a8478; padding:0 0.6%;">→</div>
+        <div style="flex:1; padding:1.2% 1%; border-top:2px solid #1f7a6b;">dbt staging</div>
+        <div style="align-self:center; color:#8a8478; padding:0 0.6%;">→</div>
+        <div style="flex:1; padding:1.2% 1%; border-top:2px solid #1f7a6b;">two-fact marts</div>
+      </div>
+      <div style="display:grid; grid-template-columns:auto auto 1fr; gap:6%; align-items:start;">
+        <div>
+          <div style="font-family:'Fraunces',serif; font-size:2.2vw; color:#1c1b18; line-height:1;">7</div>
+          <div style="font-family:'Geist Mono',monospace; font-size:0.68vw; letter-spacing:0.12em; text-transform:uppercase; color:#8a8478;">dbt models</div>
+        </div>
+        <div>
+          <div style="font-family:'Fraunces',serif; font-size:2.2vw; color:#1f7a6b; line-height:1;">19 / 19</div>
+          <div style="font-family:'Geist Mono',monospace; font-size:0.68vw; letter-spacing:0.12em; text-transform:uppercase; color:#8a8478;">tests passing</div>
+        </div>
+        <p style="font-family:'Inter',sans-serif; font-size:0.98vw; color:#3d3a33; line-height:1.55;">Including the cross-fact <span style="font-family:'Geist Mono',monospace; font-size:0.86vw; color:#1f7a6b;">relationships</span> test on the CCN join. The cost-vs-quality finding is <span style="font-family:'Geist Mono',monospace; font-size:0.86vw; color:#1f7a6b;">NTILE(5)</span> payment quintiles joined across both facts through the conformed provider dimension, with <span style="font-family:'Geist Mono',monospace; font-size:0.86vw; color:#1f7a6b;">CORR()</span> computed in SQL.</p>
+      </div>
+    </section>
+
+    <section data-slide data-label="Close" data-screen-label="10" style="position:absolute; inset:0; opacity:0; background:#e4ede9; display:flex; flex-direction:column; justify-content:center; padding:6.4% 7%;">
+      <p style="font-family:'Fraunces',serif; font-weight:300; color:#1c1b18; font-size:3vw; line-height:1.15; letter-spacing:-0.015em; max-width:80%;">The list price is a story. The <span style="font-style:italic; color:#1f7a6b;">payment</span> is the data.</p>
+      <div style="display:flex; flex-direction:column; gap:0.7em; margin-top:5%; font-family:'Geist Mono',monospace; font-size:0.92vw; color:#605b50;">
+        <div><span style="color:#8a8478; display:inline-block; width:9ch; letter-spacing:0.12em; text-transform:uppercase; font-size:0.74vw;">Repo</span> github.com/nathanaelhub/medicare-cost-quality</div>
+        <div><span style="color:#8a8478; display:inline-block; width:9ch; letter-spacing:0.12em; text-transform:uppercase; font-size:0.74vw;">Work</span> nathanaeljohnson.net/work/medicare-cost-quality</div>
+      </div>
+      <div style="margin-top:4%; padding-top:2.4%; border-top:1px solid #d9d4c7; display:flex; align-items:baseline; gap:12px;">
+        <span style="font-family:'Fraunces',serif; font-size:1.3vw; color:#1c1b18;">Nathanael Johnson</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:0.74vw; letter-spacing:0.14em; text-transform:uppercase; color:#8a8478;">Analytics Engineer</span>
+      </div>
+    </section>
+    
+
+  </div>
+
+  <div style="width:min(1120px, 94vw); display:flex; align-items:center; gap:16px;">
+    <div onclick="window.__deckPrev()" style="cursor:pointer; font-family:'Geist Mono',monospace; font-size:18px; color:#605b50; padding:4px 8px; user-select:none;">‹</div>
+    <div style="flex:1; height:2px; background:#d9d4c7; border-radius:2px; overflow:hidden;">
+      <div id="dc-progress" style="height:100%; width:0%; background:#1f7a6b; transition:width .28s ease;"></div>
+    </div>
+    <div style="font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#605b50; min-width:62px; text-align:center;"><span id="dc-counter">01 / 01</span></div>
+    <div onclick="window.__deckNext()" style="cursor:pointer; font-family:'Geist Mono',monospace; font-size:18px; color:#605b50; padding:4px 8px; user-select:none;">›</div>
+  </div>
+</div>
+
+
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('[data-slide]'));
+  var total = slides.length, i = 0;
+  var counter = document.getElementById('dc-counter');
+  var progress = document.getElementById('dc-progress');
+  function pad(n){ return (n<10?'0':'') + n; }
+  function show(n, silent) {
+    i = Math.max(0, Math.min(total - 1, n));
+    slides.forEach(function (s, idx) {
+      var on = idx === i;
+      s.style.opacity = on ? '1' : '0';
+      s.style.zIndex = on ? '2' : '1';
+      s.style.pointerEvents = on ? 'auto' : 'none';
+    });
+    if (counter) counter.textContent = pad(i + 1) + ' / ' + pad(total);
+    if (progress) progress.style.width = (total > 1 ? (i / (total - 1)) * 100 : 100) + '%';
+    if (!silent) history.replaceState(null, '', '#slide-' + (i + 1));
+  }
+  window.__deckNext = function () { show(i + 1); };
+  window.__deckPrev = function () { show(i - 1); };
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(total - 1); }
+  });
+  window.addEventListener('hashchange', function () {
+    var m = /#slide-(\d+)/.exec(location.hash);
+    if (m) show(parseInt(m[1], 10) - 1, true);
+  });
+  var m = /#slide-(\d+)/.exec(location.hash);
+  show(m ? parseInt(m[1], 10) - 1 : 0, true);
+})();
+</script>
+
+</body>
+</html>
